@@ -1,0 +1,282 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4930ee94-d00d-4085-9569-6fbda8810781",
+      "name": "Telegram Trigger",
+      "webhookId": "a19b52de-c04b-4def-85b2-800a033071bc",
+      "credentials": {
+        "telegramApi": {
+          "id": "auDA8qlYrsI1CEgV",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json[\"message\"][\"text\"]}}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "689a8f2b-3748-46e4-ae96-e5097e31e9e6"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4413eaeb-4bc5-4b52-98f0-d1bf5d40e1dc",
+                    "leftValue": "={{$json[\"message\"][\"text\"]}}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "3cd05f01-79fa-4130-8767-a7b0aa4e52e6",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "chatId": "={{$json[\"message\"][\"chat\"][\"id\"]}}",
+        "text": "Welcome to 🌿 BotanicalBot 🌿! Send me a plant name or picture to get started!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        -176
+      ],
+      "id": "cd67e027-b224-4b30-81c6-96b620ed1a83",
+      "name": "hello message",
+      "webhookId": "1b56d345-6ef9-4222-af32-d2abe0250393",
+      "credentials": {
+        "telegramApi": {
+          "id": "auDA8qlYrsI1CEgV",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "={\n  \"Content-Type\": \"application/json\",\n  \"Authorization\": \"Bearer add token here\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a plant care assistant. For any plant name provided, reply strictly in the following format using emojis and details:\\n\\n🌿 [Plant Name] Care:\\n☀️ Light: [light conditions, indoor/outdoor specifics]\\n💧 Water: [watering frequency, root rot sensitivity]\\n❄️ Winter Care: [growth/indoor movement info]\\n🌸 Flowers: [bloom frequency, ornamental info]\\n🍎 Fruits: [fruiting frequency, edibility info]\\n\\nBe concise and never add explanations or extra text before or after. Always fill all sections, even if flowering or fruiting is rare.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{$json['message']['text']}}\"\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 300\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        432,
+        128
+      ],
+      "id": "86b57e61-109a-4e00-9fed-6b73e766f75b",
+      "name": "OpenAI plant care",
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fd59c72d-9b97-4e20-b148-c0aa79d06e28",
+              "name": "message.chat.id",
+              "value": "123456798",
+              "type": "string"
+            },
+            {
+              "id": "d3871f19-f54e-4ba5-b733-5bc84e072377",
+              "name": "message.text",
+              "value": "monstera",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        288
+      ],
+      "id": "e8081b96-d08d-482a-baef-2b16a723ff28",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1a785f5d-cc8b-4be5-b45d-2d3a14054fff",
+              "name": "PlantCareMessage",
+              "value": "={{$json[\"choices\"][0][\"message\"][\"content\"]}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        624,
+        128
+      ],
+      "id": "3561198f-8d2a-46ec-bc1b-7ccf1346a884",
+      "name": "PlantCareMessage"
+    },
+    {
+      "parameters": {
+        "chatId": "={{$node[\"Telegram Trigger\"].json[\"message\"][\"chat\"][\"id\"]}}  ",
+        "text": "={{$json[\"PlantCareMessage\"]}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        816,
+        128
+      ],
+      "id": "250d7748-1778-4587-ba75-d4e225a52560",
+      "name": "send OpenAI care message",
+      "webhookId": "701cfe4b-97ed-448c-af8f-5b1fb197fa51",
+      "credentials": {
+        "telegramApi": {
+          "id": "auDA8qlYrsI1CEgV",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "hello message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OpenAI plant care",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI plant care": {
+      "main": [
+        [
+          {
+            "node": "PlantCareMessage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        []
+      ]
+    },
+    "hello message": {
+      "main": [
+        []
+      ]
+    },
+    "PlantCareMessage": {
+      "main": [
+        [
+          {
+            "node": "send OpenAI care message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "83c43577-bd60-427f-941d-68933abd6b10",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7bc653f38bf3af0ecc71c088b26278e95fd96517ae70d715091d6576b43c5b61"
+  },
+  "id": "WXl65tSSaWxJDI9F",
+  "tags": []
+}
