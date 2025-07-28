@@ -26,67 +26,6 @@
     },
     {
       "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{$json[\"message\"][\"text\"]}}",
-                    "rightValue": "/start",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    },
-                    "id": "689a8f2b-3748-46e4-ae96-e5097e31e9e6"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
-                    "id": "4413eaeb-4bc5-4b52-98f0-d1bf5d40e1dc",
-                    "leftValue": "={{$json[\"message\"][\"text\"]}}",
-                    "rightValue": "/start",
-                    "operator": {
-                      "type": "string",
-                      "operation": "notEquals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.2,
-      "position": [
-        208,
-        0
-      ],
-      "id": "3cd05f01-79fa-4130-8767-a7b0aa4e52e6",
-      "name": "Switch"
-    },
-    {
-      "parameters": {
         "chatId": "={{$json[\"message\"][\"chat\"][\"id\"]}}",
         "text": "Welcome to 🌿 BotanicalBot 🌿! Send me a plant name or picture to get started!",
         "additionalFields": {}
@@ -113,10 +52,10 @@
         "url": "https://api.openai.com/v1/chat/completions",
         "sendHeaders": true,
         "specifyHeaders": "json",
-        "jsonHeaders": "={\n  \"Content-Type\": \"application/json\",\n  \"Authorization\": \"Bearer add token here\"\n}",
+        "jsonHeaders": "={\n  \"Content-Type\": \"application/json\",\n  \"Authorization\": \"Bearer add your token here\"\n}",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a plant care assistant. For any plant name provided, reply strictly in the following format using emojis and details:\\n\\n🌿 [Plant Name] Care:\\n☀️ Light: [light conditions, indoor/outdoor specifics]\\n💧 Water: [watering frequency, root rot sensitivity]\\n❄️ Winter Care: [growth/indoor movement info]\\n🌸 Flowers: [bloom frequency, ornamental info]\\n🍎 Fruits: [fruiting frequency, edibility info]\\n\\nBe concise and never add explanations or extra text before or after. Always fill all sections, even if flowering or fruiting is rare.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{$json['message']['text']}}\"\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 300\n}\n",
+        "jsonBody": "={\n  \"model\": \"gpt-3.5-turbo\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a botanist with a specialty in home growing you answer for Israels climate and use the metric system. For any plant name provided, reply strictly in the following format using emojis and details:\\n\\n🌿 [Plant Name] info:\\n☀️ Light: [light conditions, is it recommended to grow indoors / outdoors, best location lightwise]\\n💧 Water: [watering frequency, root rot sensitivity]\\n❄️ Seasonal info: [is this plant annual / perennial, what happens to it in summer, what happens in winter]\\n🌸 Flowers: [bloom frequency, ornamental info]\\n🍎 Fruits: [fruiting frequency, edibility info]\\n\\nBe concise and never add explanations or extra text before or after. Always fill all sections, even if flowering or fruiting is rare.\"\n    },\n    {\n      \"role\": \"user\",\n  \"content\": \"{{$json.message.text}}\"\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 300\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -175,26 +114,115 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        624,
-        128
+        640,
+        80
       ],
       "id": "3561198f-8d2a-46ec-bc1b-7ccf1346a884",
-      "name": "PlantCareMessage"
+      "name": "extract plant care message"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json[\"message\"][\"text\"]}}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "689a8f2b-3748-46e4-ae96-e5097e31e9e6"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4413eaeb-4bc5-4b52-98f0-d1bf5d40e1dc",
+                    "leftValue": "={{$json[\"message\"][\"text\"]}}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "3cd05f01-79fa-4130-8767-a7b0aa4e52e6",
+      "name": "switch plant name"
+    },
+    {
+      "parameters": {
+        "jsCode": "const plantName = $node[\"switch plant name\"].json.message.text || \"Your Plant\";\n\nconst openAINode = $node[\"OpenAI plant care\"];\nconst openAIText = openAINode?.json?.choices?.[0]?.message?.content || \"\";\n\n// Extract watering frequency\nconst wateringMatch = openAIText.match(/(\\d+[-–]?\\d*)\\s*(x|times)?\\/week/i);\nconst wateringFrequency = wateringMatch ? wateringMatch[0] : \"1-2x/week\";\n\n// Calculate days to add\nlet daysToAdd = 3; // default\nconst freqMatch = wateringFrequency.match(/(\\d+)[-–]?(\\d*)/);\nif (freqMatch) {\n  const minFreq = parseInt(freqMatch[1], 10);\n  const maxFreq = freqMatch[2] ? parseInt(freqMatch[2], 10) : minFreq;\n  const avgPerWeek = (minFreq + maxFreq) / 2;\n  daysToAdd = Math.round(7 / avgPerWeek); // e.g. every 3–4 days\n}\n\nconst nextWateringDate = new Date();\nnextWateringDate.setDate(nextWateringDate.getDate() + daysToAdd);\n\nfunction formatDate(date) {\n  return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';\n}\n\nconst startDate = formatDate(nextWateringDate);\nconst endDate = formatDate(new Date(nextWateringDate.getTime() + 30 * 60000)); // +30 min\n\nconst rrule = `RRULE:FREQ=DAILY;INTERVAL=${daysToAdd};COUNT=5`; // repeat 3 times only for testing\n\nconst eventTitle = encodeURIComponent(`Water ${plantName} 🌿`);\nconst eventDetails = encodeURIComponent(`Water your plant ${wateringFrequency}. Avoid overwatering to prevent root rot.`);\n\n\nconst calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=${startDate}/${endDate}&details=${eventDetails}&recur=${rrule}`;\n\nreturn [{\n  json: {\n    calendarUrl,\n    plantCareMessage: openAIText,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        272
+      ],
+      "id": "7ed6615b-59db-4954-852b-c559dcab8fc6",
+      "name": "watering calendar"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        864,
+        160
+      ],
+      "id": "c3f6a684-1c9f-424c-b100-026a09c49ece",
+      "name": "Merge"
     },
     {
       "parameters": {
         "chatId": "={{$node[\"Telegram Trigger\"].json[\"message\"][\"chat\"][\"id\"]}}  ",
-        "text": "={{$json[\"PlantCareMessage\"]}}",
+        "text": "={{$json[\"PlantCareMessage\"]}}\n\n📅 Add a watering reminder to your Google Calendar:\n{{$json[\"calendarUrl\"]}}\n",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        816,
-        128
+        1104,
+        160
       ],
       "id": "250d7748-1778-4587-ba75-d4e225a52560",
-      "name": "send OpenAI care message",
+      "name": "send telegram care message",
       "webhookId": "701cfe4b-97ed-448c-af8f-5b1fb197fa51",
       "credentials": {
         "telegramApi": {
@@ -210,14 +238,51 @@
       "main": [
         [
           {
-            "node": "Switch",
+            "node": "switch plant name",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Switch": {
+    "OpenAI plant care": {
+      "main": [
+        [
+          {
+            "node": "watering calendar",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "extract plant care message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        []
+      ]
+    },
+    "hello message": {
+      "main": [
+        []
+      ]
+    },
+    "extract plant care message": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "switch plant name": {
       "main": [
         [
           {
@@ -235,36 +300,31 @@
         ]
       ]
     },
-    "OpenAI plant care": {
+    "watering calendar": {
       "main": [
         [
           {
-            "node": "PlantCareMessage",
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "send telegram care message",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Edit Fields": {
+    "send telegram care message": {
       "main": [
         []
-      ]
-    },
-    "hello message": {
-      "main": [
-        []
-      ]
-    },
-    "PlantCareMessage": {
-      "main": [
-        [
-          {
-            "node": "send OpenAI care message",
-            "type": "main",
-            "index": 0
-          }
-        ]
       ]
     }
   },
@@ -272,7 +332,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "83c43577-bd60-427f-941d-68933abd6b10",
+  "versionId": "3c82e6c4-9fd7-417d-aa20-6ac7897d4bb8",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "7bc653f38bf3af0ecc71c088b26278e95fd96517ae70d715091d6576b43c5b61"
